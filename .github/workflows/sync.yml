@@ -1,0 +1,27 @@
+name: Canvas to Notion sync
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"  # every 6 hours
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run sync
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          CANVAS_BASE_URL: ${{ secrets.CANVAS_BASE_URL }}
+          CANVAS_TOKEN: ${{ secrets.CANVAS_TOKEN }}
+          TIMEZONE: ${{ secrets.TIMEZONE }}
+          LOOKAHEAD_DAYS: ${{ secrets.LOOKAHEAD_DAYS }}
+          COURSE_IDS: ${{ secrets.COURSE_IDS }}
+          COURSE_NAME_OVERRIDES: ${{ secrets.COURSE_NAME_OVERRIDES }}
+        run: python canvas_notion_sync.py
